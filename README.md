@@ -1,4 +1,4 @@
-# Playing with the LOGO!8.3
+# Playing with the LOGO!
 
 - [Intro](#intro)
 - [Hardware Analysis](#hardware-analysis)

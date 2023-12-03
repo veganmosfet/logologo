@@ -1,0 +1,200 @@
+<html>
+<head>
+    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon" />
+</head>
+<body onload="SerialLoading();" comm_channel_encrypt_flag="0" logo_ms_state="0"
+    local_storage_test_fail="Local storage is disabled. Please enable it." web_customer_login_flag="0">
+    <pscript logo_src="js/utility.js"></pscript>
+    <pscript logo_src="js/storage.js"></pscript>
+    <pscript logo_src="js/bigint.js"></pscript>
+    <pscript logo_src="js/encrypt.js"></pscript>
+    <pscript logo_src="js/ajax.js"></pscript>
+    <pscript logo_src="js/login.js"></pscript>
+    <pscript logo_src="js/pagecommon.js"></pscript>
+    <script type="text/javascript" language="javascript">
+        function Initialize() {
+            //update communication channel encrypt flag:
+            var sEncryptFlag = document.body.getAttribute("comm_channel_encrypt_flag");
+            var iEncryptFlag = parseInt(sEncryptFlag);
+            if (isNaN(iEncryptFlag))
+                iEncryptFlag = 0;
+            LocalStorage.Instance().Set("logo_comm_channel_encrypt_flag", iEncryptFlag);
+
+            //local storage test:
+            var sResultValue;
+            var sTestKey = "local_storage_test";
+            var sTestValue = sTestKey + "_value";
+            try {
+                LocalStorage.Instance().Set(sTestKey, sTestValue);
+                sResultValue = LocalStorage.Instance().Get(sTestKey);
+            }
+            catch (e) {
+                //do nothing.
+            }
+            if (sResultValue != sTestValue) {
+                var sErrorInfo = document.body.getAttribute("local_storage_test_fail");
+                if (sErrorInfo)
+                    alert(sErrorInfo)
+                else
+                    alert("local storage is disabled, please enable it.");
+            }
+
+            var bAutoLoginSuccessfully = false;
+            if (LocalStorage.Instance().Get("logo_current_autologin")) {
+                //auto login:
+                var sPublicKey1 = document.body.getAttribute("logo_public_key1");
+                var sPublicKey2 = document.body.getAttribute("logo_public_key2");
+                var sUserName = LocalStorage.Instance().Get("logo_current_user");
+                var sPassword = LocalStorage.Instance().Get("logo_current_password");				
+                //if(sPublicKey1 && sPublicKey2)
+                {
+                    var to_customized_site = (document.body.getAttribute("web_customer_login_flag") == "1") && LocalStorage.Instance().Get("logo_current_logto_customized_site");
+                    LocalLogin(sPublicKey1, sPublicKey2, sUserName, sPassword, true, to_customized_site);
+                    bAutoLoginSuccessfully = true;
+                }
+            }
+            if (!bAutoLoginSuccessfully) {
+                //try to navigate to real start page:
+                var iCurLanguage = LocalStorage.Instance().Get("logo_current_language");
+                if (typeof iCurLanguage == "undefined" || iCurLanguage == null)
+                    iCurLanguage = 1;
+                //check web customer login page
+                if (document.body.getAttribute("web_customer_login_flag") == "1")
+                {
+                    //use customer login page
+                    if (window.location.protocol.indexOf("https") == 0)
+                        window.location.replace("/lfs/dev/sdcard/webroot/https/forward.htm");
+                    else
+                        window.location.replace("/lfs/dev/sdcard/webroot/forward.htm");
+                }
+                else
+                {
+                    //use default login page
+                    window.location.replace("/logo_login.shtm?!App-Language=" + iCurLanguage);
+                }
+            }
+        }
+
+        //************* serially load all elements *************//
+        function getAllElementsByAttribute(attr) {
+            var elements = [];
+            var allElements = document.getElementsByTagName('*');
+            for (var i = 0, n = allElements.length; i < n; i++)
+            {
+                if (allElements[i].hasAttribute(attr))
+                {
+                    // Element exists with attribute. Add to array.
+                    elements.push(allElements[i]);
+                }
+            }
+            return elements;
+        }
+    
+        function AddEvent(eleTarget, sIEEvent, sOtherEvent, fnHandler, bUseCapture) 
+        {
+            if (eleTarget && fnHandler) 
+            {
+                if (window.attachEvent) 
+                {
+                    //for IE:
+                    eleTarget.attachEvent(sIEEvent, fnHandler);
+                }
+                else 
+                {
+                    //others:
+                    eleTarget.addEventListener(sOtherEvent, fnHandler, bUseCapture);
+                }
+            }
+        }
+
+        function RemoveEvent(eleTarget, sIEEvent, sOtherEvent, fnHandler) 
+        {
+            if (eleTarget && fnHandler) 
+            {
+                if (window.detachEvent) 
+                {
+                    //for IE:
+                    eleTarget.detachEvent(sIEEvent, fnHandler);
+                }
+                else 
+                {
+                    //others:
+                    eleTarget.removeEventListener(sOtherEvent, fnHandler);
+                }
+            }
+        }
+
+        function CheckIE()
+        {
+            if (!!window.ActiveXObject || "ActiveXObject" in window)
+                return true;
+            else
+                return false;
+        }
+
+        function RealLoad(elements, index) 
+        {
+            var new_element;
+            var OnElementLoad = function()
+            {
+                RemoveEvent(new_element, 'onload', 'onload', OnElementLoad);
+                if ((typeof(new_element) != 'undefined') && (new_element.tagName == "LINK"))
+                {
+                    if (new_element.hasAttribute('actual_rel'))
+                    {
+                        new_element.rel = new_element.getAttribute('actual_rel');
+                        new_element.removeAttribute('actual_rel');
+                    }
+                }
+
+                if (index < (elements.length - 1)) 
+                {
+                    RealLoad(elements, index + 1);
+                }
+                else
+                {
+                    Initialize();
+                }
+            }
+            var e = elements[index];
+            if (e.tagName == 'PSCRIPT')
+            {
+                new_element = document.createElement('script');
+                AddEvent(new_element, 'load', 'load', OnElementLoad, false);
+                new_element.type = 'text/javascript';
+                new_element.src = e.getAttribute('logo_src');
+                document.getElementsByTagName('head')[0].appendChild(new_element);
+            }
+            else if (e.tagName == "PLINK")
+            {
+                var new_element = document.createElement('link');
+                AddEvent(new_element, 'load', 'load', OnElementLoad, false);
+                if (CheckIE() || (e.getAttribute('actual_rel') == 'stylesheet'))
+                {
+                    new_element.rel = 'stylesheet';
+                }
+                else
+                {
+                    new_element.rel = 'prefetch';
+                }
+                if (e.hasAttribute('actual_rel') && (e.getAttribute('actual_rel') != 'stylesheet'))
+                {
+                    new_element.setAttribute('actual_rel', e.getAttribute('actual_rel'));
+                }
+                new_element.href = e.getAttribute('logo_src');
+                document.getElementsByTagName('head')[0].appendChild(new_element);
+            }
+            else
+            {
+                AddEvent(e, 'load', 'load', OnElementLoad, false);
+                e.src = e.getAttribute('logo_src');
+                e.removeAttribute('logo_src');
+            }
+        }
+        function SerialLoading() {
+            var elements = getAllElementsByAttribute("logo_src");
+            RealLoad(elements, 0);
+        }
+    </script>
+</body>
+</html>
