@@ -48,9 +48,9 @@ Any idea how to re-open JTAG? :-D
 
 ## Extracting & Analyzing the Firmware
 
-What a coincidence, I already successfully bypassed the read-back / JTAG protection on the `TM4C129x` family (see [here](https://github.com/vegantransistor/tm4c_emfi)). Let's connect a JLINK JTAG probe and try it for the LOGO! TI MCU.
+What a coincidence, I already successfully bypassed the read-back / JTAG protection on the `TM4C129x` family (see [here](https://github.com/veganmosfet/EMFI-TI-TM4C12x). Let's connect a JLINK JTAG probe and try it for the LOGO! TI MCU.
 
-I had one problem at the beginning: after a successful EM-FI it is normally possible to reconnect the JLINK probe, assuming no reset has been performed in between. For the LOGO! this did not work, JTAG was only available once (any subsequent attempt was blocked), so I had to write a [JLINK script](https://github.com/vegantransistor/LOGO/blob/main/scripts/logo.JLinkScript) to read-back the whole Flash content directly after the first successful connection.
+I had one problem at the beginning: after a successful EM-FI it is normally possible to reconnect the JLINK probe, assuming no reset has been performed in between. For the LOGO! this did not work, JTAG was only available once (any subsequent attempt was blocked), so I had to write a [JLINK script](https://github.com/veganmosfet/LOGO/blob/main/scripts/logo.JLinkScript) to read-back the whole Flash content directly after the first successful connection.
 
 Here is a picture of the setup:
 
