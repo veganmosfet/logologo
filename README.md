@@ -382,7 +382,7 @@ In the second part, we analyzed the password-based login procedure of the LOGO! 
 ## Responsible Disclosure
 
 * 2022-08-24: Disclosure to Siemens Product CERT
-* 2023-12-12: Clearance to publish. [Advisory](https://cert-portal.siemens.com/productcert/html/ssa-844582.html) has been released.
+* 2023-12-12: Clearance to publish from Siemens Product CERT. An [Advisory](https://cert-portal.siemens.com/productcert/html/ssa-844582.html) has been released.
 ## Fun Fact
 
 I bricked my first LOGO!8.3 device (the MCU) after having extracted the firmware. At that time I was not aware of the pairing mechanism and I loaded the same firmware into a second LOGO! device. I was surprised that TLS was not working at all 😠. Then, I literally cut the optiga Secure Element from the first device PCB and soldered the pins (I2C + power) to the functioning second device. Magic: it worked! :-D
