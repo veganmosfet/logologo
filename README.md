@@ -50,7 +50,7 @@ Any idea how to re-open JTAG? :-D
 
 What a coincidence, I already successfully bypassed the read-back / JTAG protection on the `TM4C129x` family (see [here](https://github.com/veganmosfet/EMFI-TI-TM4C12x)). Let's connect a JLINK JTAG probe and try it for the LOGO! TI MCU.
 
-I had one problem at the beginning: after a successful EM-FI it is normally possible to reconnect the JLINK probe, assuming no reset has been performed in between. For the LOGO! this did not work, JTAG was only available once (any subsequent attempt was blocked), so I had to write a [JLINK script](https://github.com/veganmosfet/LOGO/blob/main/scripts/logo.JLinkScript) to read-back the whole Flash content directly after the first successful connection.
+I had one problem at the beginning: after a successful EM-FI it is normally possible to reconnect the JLINK probe, assuming no reset has been performed in between. For the LOGO! this did not work, JTAG was only available once (any subsequent attempt was blocked), so I had to write a [JLINK script](https://github.com/veganmosfet/logologo/blob/main/scripts/logo.JLinkScript) to read-back the whole Flash content directly after the first successful connection.
 
 Here is a picture of the setup:
 
@@ -241,7 +241,7 @@ These are the required steps to achieve this attack:
 6. Start the MCU
 7. Start `LOGO!Soft Comfort` and establish a live connection with the device (`online` > `connect`).
 8. The MCU shall halt at the breakpoint
-9. Save `17` (`0x11`) words of internal SRAM memory at `0x2003f6c0` (SH2 buffer address) in a file called `pu.bin`. To do that, use the `save memory` operation of Code Composer Studio (`memory` tab) and use the binary format:
+9. Save `17` (`0x11`) words of internal SRAM memory at `0x2003f6c0` (SHA2 buffer address) in a file called `pu.bin`. To do that, use the `save memory` operation of Code Composer Studio (`memory` tab) and use the binary format:
 
 ![pu1](./pictures/pu1.png)
 
